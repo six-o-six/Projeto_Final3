@@ -9,9 +9,9 @@ app = Flask(__name__, static_folder='../PROJETO_FINAL', static_url_path='/')
 # ATENÇÃO: Substitua 'sua_senha_mysql' pela senha do seu usuário MySQL
 db_config = {
     'host': 'localhost',
-    'database': 'scratch', # Nome do banco de dados que você criou
+    'database': 'Scratch', # Nome do banco de dados que você criou
     'user': 'root',        # Geralmente 'root', ou seu usuário MySQL
-    'password': 'root' # SUA SENHA AQUI
+    'password': '1234' # SUA SENHA AQUI
 }
 
 def create_db_connection():
