@@ -5,80 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administração - Curso de Scratch</title>
     <link rel="stylesheet" href="styles.css">
-    <style>
-        .admin-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .user-form {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #4a90e2;
-        }
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-        .users-list {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-        .user-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-        }
-        .user-info {
-            flex: 1;
-        }
-        .user-actions {
-            display: flex;
-            gap: 10px;
-        }
-        .delete-btn {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .delete-btn:hover {
-            background: #c82333;
-        }
-    </style>
 </head>
 <body>
     <div class="main-layout">
         <header class="header">
             <div class="logo">
-                <img src=img/scratch.png height=100px width=100px alt="Scratch Logo" id="scratch-logo">
+                <img src=img/scratch.png height=150 width=150 alt="Scratch Logo" id="scratch-logo">
             </div>
             <nav>
                 <ul class="nav-menu">
-                    <li id="adminLink"><a href="admin.html">Administração</a></li>
-                    <li><a href="database.html" class="active">Banco de Dados</a></li>
-                    <li><a href="teacher-diary.html">Diário de Classe</a></li>
-                    <li><a href="teacher-materials.html">Materiais</a></li>
+                    <li id="navAdmin"><a href="admin.html">Administração de Usuários</a></li>
+                    <li id="navBancoDados"><a href="database.html">Banco de Dados</a></li>
+                    <li id="navDiarioClasseProf"><a href="teacher-diary.html">Diário de Classe</a></li>
+                    <li id="navMateriaisProf"><a href="teacher-materials.html">Materiais</a></li>
+                    
                     <li class="dropdown">
                         <a href="#">Links Externos ▼</a>
                         <div class="dropdown-content">
@@ -107,168 +47,191 @@
         </header>
         
         <main class="content">
-            <div class="admin-container">
-                <h1 class="page-title">Administração de Usuários</h1>
-                
-                <!-- Formulário para adicionar usuário -->
-                <div class="user-form">
-                    <h2>Adicionar Novo Usuário</h2>
-                    <form id="addUserForm">
-                        <div class="form-group">
-                            <label for="newUsername">Nome de Usuário:</label>
-                            <input type="text" id="newUsername" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="newPassword">Senha:</label>
-                            <input type="password" id="newPassword" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="newName">Nome Completo:</label>
-                            <input type="text" id="newName" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="newRole">Tipo de Usuário:</label>
-                            <select id="newRole" required>
-                                <option value="student">Aluno</option>
-                                <option value="teacher">Professor</option>
-                                </select>
-                        </div>
-                        
-                        <button type="submit" class="nav-btn">Adicionar Usuário</button>
-                    </form>
+            <h1 class="page-title">Administração de Usuários</h1>
+            
+            <div class="admin-actions">
+                <h2>Gerenciar Usuários</h2>
+                <div class="action-grid">
+                    <a href="#" class="quick-action-btn" onclick="openAddUserModal()">
+                        <div class="action-icon">➕</div>
+                        <div class="action-text">Adicionar Novo Usuário</div>
+                    </a>
+                    <a href="#" class="quick-action-btn" onclick="alert('Funcionalidade de editar usuário em construção.')">
+                        <div class="action-icon">✏️</div>
+                        <div class="action-text">Editar Usuário Existente</div>
+                    </a>
+                    <a href="#" class="quick-action-btn" onclick="alert('Funcionalidade de deletar usuário em construção.')">
+                        <div class="action-icon">🗑️</div>
+                        <div class="action-text">Deletar Usuário</div>
+                    </a>
                 </div>
-                
-                <!-- Lista de usuários -->
-                <div class="users-list">
-                    <h2>Usuários Cadastrados</h2>
-                    <div id="usersList"></div>
+            </div>
+
+            <div class="admin-user-list">
+                <h2>Listagem de Usuários (Apenas Visualização)</h2>
+                <div class="database-table-container">
+                    <table class="database-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome de Usuário</th>
+                                <th>Nome Completo</th>
+                                <th>Perfil</th>
+                                <th>Último Login</th>
+                                <th>Total de Logins</th>
+                                <th>Status Online</th>
+                                <th>ID de Aluno (se aplicável)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userListTableBody">
+                            </tbody>
+                    </table>
                 </div>
             </div>
         </main>
     </div>
+
+    <div id="addUserModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>➕ Adicionar Novo Usuário</h3>
+                <button class="close-btn" onclick="closeAddUserModal()">×</button>
+            </div>
+            <form id="addUserForm" class="modal-body">
+                <div class="form-group">
+                    <label for="newUsername">Nome de Usuário:</label>
+                    <input type="text" id="newUsername" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">Senha:</label>
+                    <input type="password" id="newPassword" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="newFullName">Nome Completo (Opcional):</label>
+                    <input type="text" id="newFullName" name="full_name">
+                </div>
+                <div class="form-group">
+                    <label for="newRole">Perfil:</label>
+                    <select id="newRole" name="role" required>
+                        <option value="student">Aluno</option>
+                        <option value="teacher">Professor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="newStudentId">ID de Aluno (se perfil for Aluno):</label>
+                    <input type="number" id="newStudentId" name="student_id" placeholder="Deixe em branco para Professor">
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="action-btn primary">Adicionar Usuário</button>
+                    <button type="button" class="action-btn secondary" onclick="closeAddUserModal()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
     
     <script src="script.js"></script>
     <script>
-        // Carregar e exibir usuários do BACKEND
-        async function loadUsersList() {
-            const usersList = document.getElementById('usersList');
-            usersList.innerHTML = ''; // Limpa a lista existente
+        // Funções específicas do admin.html
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchUserList(); // Carregar a lista de usuários ao carregar a página
+        });
 
+        async function fetchUserList() {
             try {
-                const response = await fetch('http://127.0.0.1:5000/users'); // Requisição GET para buscar usuários
+                const response = await fetch('http://127.0.0.1:5000/users');
                 if (!response.ok) {
                     throw new Error(`Erro HTTP! Status: ${response.status}`);
                 }
                 const users = await response.json();
-                console.log('Usuários carregados do backend:', users);
+                displayUserList(users);
+            } catch (error) {
+                console.error('Erro ao buscar lista de usuários:', error);
+                const tbody = document.getElementById('userListTableBody');
+                if (tbody) {
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Erro ao carregar lista de usuários.</td></tr>`;
+                }
+            }
+        }
 
-                if (users.length === 0) {
-                    usersList.innerHTML = '<p style="text-align: center; color: #666;">Nenhum usuário cadastrado.</p>';
+        function displayUserList(users) {
+            const tbody = document.getElementById('userListTableBody');
+            if (!tbody) {
+                console.warn('Elemento tbody da userListTableBody não encontrado.');
+                return;
+            }
+            tbody.innerHTML = ''; // Limpa as linhas existentes
+
+            if (users.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center;">Nenhum usuário encontrado.</td></tr>`;
+                return;
+            }
+
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                const lastLogin = user.last_login ? new Date(user.last_login).toLocaleString('pt-BR') : 'Nunca';
+                row.innerHTML = `
+                    <td>${user.id || ''}</td>
+                    <td>${user.username || ''}</td>
+                    <td>${user.full_name || ''}</td>
+                    <td>${user.role || ''}</td>
+                    <td>${lastLogin}</td>
+                    <td>${user.total_logins !== null ? user.total_logins : ''}</td>
+                    <td>${user.online_status || ''}</td>
+                    <td>${user.student_id !== null ? user.student_id : ''}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Funções para o modal de adicionar usuário
+        window.openAddUserModal = function() {
+            document.getElementById('addUserModal').classList.remove('hidden');
+        }
+
+        window.closeAddUserModal = function() {
+            document.getElementById('addUserModal').classList.add('hidden');
+            document.getElementById('addUserForm').reset();
+        }
+
+        const addUserForm = document.getElementById('addUserForm');
+        if (addUserForm) {
+            addUserForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+
+                const formData = new FormData(addUserForm);
+                const userData = {};
+                for (let [key, value] of formData.entries()) {
+                    userData[key] = value;
+                }
+                
+                // Validações básicas (pode expandir)
+                if (!userData.username || !userData.password || !userData.role) {
+                    alert('Nome de usuário, senha e perfil são obrigatórios.');
                     return;
                 }
-                
-                users.forEach(user => {
-                    const userDiv = document.createElement('div');
-                    userDiv.className = 'user-item';
-                    userDiv.innerHTML = `
-                        <div class="user-info">
-                            <strong>${user.full_name || user.username}</strong><br>
-                            <small>Usuário: ${user.username} | Tipo: ${user.role}</small>
-                            ${user.last_login ? `<br><small>Último Login: ${new Date(user.last_login).toLocaleString('pt-BR')}</small>` : ''}
-                            ${user.online_status ? `<br><small>Status: ${user.online_status}</small>` : ''}
-                        </div>
-                        <div class="user-actions">
-                            <button class="action-btn small" onclick="editUser('${user.id}')" title="Editar">✏️</button>
-                            <button class="delete-btn" onclick="deleteUser('${user.id}')">Excluir</button>
-                        </div>
-                    `;
-                    usersList.appendChild(userDiv);
-                });
 
-            } catch (error) {
-                console.error('Erro ao carregar lista de usuários:', error);
-                usersList.innerHTML = '<p style="text-align: center; color: red;">Erro ao carregar usuários.</p>';
-            }
-        }
-        
-        // Adicionar novo usuário (enviar para o backend)
-        document.getElementById('addUserForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const username = document.getElementById('newUsername').value;
-            const password = document.getElementById('newPassword').value;
-            const full_name = document.getElementById('newName').value; // MODIFICADO: 'name' para 'full_name'
-            const role = document.getElementById('newRole').value;
-
-            // Se o papel for 'student', e houver um aluno correspondente, você pode pegar o student_id
-            // Por enquanto, student_id será null se não houver lógica para associar
-            let student_id = null; 
-            // Lógica para buscar student_id se for 'student' e associar a um aluno existente
-            // Por exemplo: se o full_name for o mesmo de um aluno, buscar o ID dele.
-            // Isso é mais complexo e pode ser feito numa etapa futura.
-
-            try {
-                const response = await fetch('http://127.0.0.1:5000/users/add', { // Requisição POST para adicionar usuário
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ username, password, full_name, role, student_id }), // Envia todos os dados
-                });
-
-                const data = await response.json();
-                
-                if (data.success) {
-                    alert('Usuário adicionado com sucesso!');
-                    document.getElementById('addUserForm').reset(); // Limpa o formulário
-                    loadUsersList(); // Recarrega a lista para mostrar o novo usuário
-                } else {
-                    alert('Erro ao adicionar usuário: ' + (data.message || 'Erro desconhecido.'));
-                }
-            } catch (error) {
-                console.error('Erro de rede ou servidor ao adicionar usuário:', error);
-                alert('Erro de conexão ou servidor ao tentar adicionar usuário.');
-            }
-        });
-        
-        // Excluir usuário (enviar para o backend)
-        async function deleteUser(userId) { // MODIFICADO: Recebe userId, não username
-            if (confirm(`Tem certeza que deseja excluir o usuário com ID ${userId}?`)) {
                 try {
-                    const response = await fetch(`http://127.0.0.1:5000/users/delete/${userId}`, { // Requisição DELETE
-                        method: 'DELETE',
+                    const response = await fetch('http://127.0.0.1:5000/users/add', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(userData),
                     });
                     const data = await response.json();
-                    
                     if (data.success) {
-                        alert('Usuário excluído com sucesso!');
-                        loadUsersList(); // Recarrega a lista
+                        alert('Usuário adicionado com sucesso!');
+                        closeAddUserModal();
+                        fetchUserList(); // Recarrega a lista
                     } else {
-                        alert('Erro ao excluir usuário: ' + (data.message || 'Erro desconhecido.'));
+                        alert('Erro ao adicionar usuário: ' + (data.message || 'Erro desconhecido.'));
                     }
                 } catch (error) {
-                    console.error('Erro de rede ou servidor ao excluir usuário:', error);
-                    alert('Erro de conexão ou servidor ao tentar excluir usuário.');
+                    console.error('Erro de rede ou servidor ao adicionar usuário:', error);
+                    alert('Erro de conexão ou servidor. Tente novamente mais tarde.');
                 }
-            }
+            });
         }
-
-        // ADIÇÃO: Função para editar usuário (pode ser expandida no futuro)
-        // Por enquanto, apenas alerta, mas você pode expandir para um modal de edição.
-        async function editUser(userId) {
-            alert(`Funcionalidade de edição para o usuário ID ${userId} será implementada aqui.`);
-            // Exemplo de como buscar dados para edição:
-            // const response = await fetch(`http://127.0.0.1:5000/users/${userId}`);
-            // const userData = await response.json();
-            // console.log("Dados para editar:", userData);
-            // Implementar modal de edição aqui
-        }
-            
-        // Carregar lista ao abrir a página
-        document.addEventListener('DOMContentLoaded', loadUsersList);
     </script>
 </body>
 </html>

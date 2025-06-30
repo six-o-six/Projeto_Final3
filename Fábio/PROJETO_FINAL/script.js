@@ -1,6 +1,6 @@
 // REMOÇÃO: A base de dados de usuários e as funções addUser/loadUsers hardcoded não são mais necessárias, pois o login e gerenciamento de usuários agora são feitos pelo backend.
 // const users = { ... }
-// function addUser(username, password, role = "student", name = "") { ... }
+// function addUser(username, password, role = "student", name = "") { { ... } }
 // function loadUsers() { ... }
 
 
@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
           localStorage.setItem("isLoggedIn", "true");
           localStorage.setItem("userId", data.user.id);
           localStorage.setItem("username", data.user.username);
-          localStorage.setItem("userRole", data.user.role);
+          localStorage.setItem("userRole", data.user.role); // Role é definida aqui
           localStorage.setItem("userName", data.user.full_name); // MODIFICAÇÃO: Agora 'full_name' do backend
           localStorage.setItem("userStudentId", data.user.student_id);
 
@@ -66,30 +66,81 @@ document.addEventListener("DOMContentLoaded", () => {
   const isLoginPage = window.location.pathname.endsWith("index.html") || window.location.pathname === "/";
 
   if (!isLoginPage && !localStorage.getItem("isLoggedIn")) {
-    window.location.href = "index.html";
+    window.location.href = "index.html"; // Apenas redireciona se NÃO estiver logado
   }
 
-  // ADIÇÃO: Lógica para mostrar/esconder o link de administração e outros links de professor/administrador
-  const userRole = localStorage.getItem("userRole"); // Pega o papel do usuário logado
-  
-  const adminLink = document.getElementById('adminLink'); // Link para Administração
-  const navBancoDados = document.getElementById('navBancoDados'); // Link para Banco de Dados
-  const navDiarioClasseProf = document.getElementById('navDiarioClasseProf'); // Link para Diário de Classe (Professor)
-  const navMateriaisProf = document.getElementById('navMateriaisProf'); // Link para Materiais (Professor)
+  // ADIÇÃO: Lógica de Redirecionamento por Perfil (NOVA LÓGICA CENTRAL)
+  const userRole = localStorage.getItem("userRole");
+  const isLoggedIn = localStorage.getItem("isLoggedIn");
+  const currentPage = window.location.pathname.split('/').pop(); // Obtém apenas o nome do arquivo da URL
 
-  // Controla a visibilidade dos links específicos de professor/administrador
+  if (isLoggedIn === 'true') {
+      // Páginas que são estritamente do professor (não devem ser acessadas por alunos)
+      const strictTeacherPages = ['teacher-dashboard.html', 'admin.html', 'database.html', 'teacher-diary.html', 'teacher-materials.html'];
+      // Páginas que são estritamente do aluno (não devem ser acessadas por professores)
+      const strictStudentPages = ['dashboard.html'];
+
+      if (userRole === 'teacher') {
+          // Se um professor está em uma página estritamente de aluno, redireciona para a dashboard do professor
+          if (strictStudentPages.includes(currentPage)) {
+              console.log("Professor em página de aluno, redirecionando para dashboard do professor.");
+              window.location.href = "teacher-dashboard.html";
+          }
+      } else if (userRole === 'student') {
+          // Se um aluno está em uma página estritamente de professor, redireciona para a dashboard do aluno
+          if (strictTeacherPages.includes(currentPage)) {
+              console.log("Aluno em página de professor, redirecionando para dashboard do aluno.");
+              window.location.href = "dashboard.html";
+          }
+      }
+  }
+
+
+  // ADIÇÃO: Lógica para mostrar/esconder links de navegação com base no perfil
+  // Nota: Estes IDs devem estar presentes no HTML dos cabeçalhos que você quer controlar.
+  // No cabeçalho UNIFICADO, coloque TODOS os links de aluno e professor com IDs únicos.
+
+  const navAdmin = document.getElementById('navAdmin'); // ID para Administração de Usuários
+  const navBancoDados = document.getElementById('navBancoDados');
+  const navDiarioClasseProf = document.getElementById('navDiarioClasseProf');
+  const navMateriaisProf = document.getElementById('navMateriaisProf');
+
+  const navDiarioClasseAluno = document.getElementById('navDiarioClasseAluno'); // ID para Diário de Classe do Aluno
+  const navMateriaisAluno = document.getElementById('navMateriaisAluno'); // ID para Materiais do Aluno
+
   if (userRole === 'teacher') {
-      // Se for professor, todos esses links devem estar visíveis (se existirem na página)
-      if (adminLink) adminLink.style.display = 'block'; // ou 'list-item'
-      if (navBancoDados) navBancoDados.style.display = 'block';
-      if (navDiarioClasseProf) navDiarioClasseProf.style.display = 'block';
-      if (navMateriaisProf) navMateriaisProf.style.display = 'block';
+      // Mostrar links de Professor
+      if (navAdmin) navAdmin.style.display = 'list-item'; // Use 'list-item' para garantir que o estilo de lista seja aplicado
+      if (navBancoDados) navBancoDados.style.display = 'list-item';
+      if (navDiarioClasseProf) navDiarioClasseProf.style.display = 'list-item';
+      if (navMateriaisProf) navMateriaisProf.style.display = 'list-item';
+
+      // Ocultar links de Aluno
+      if (navDiarioClasseAluno) navDiarioClasseAluno.style.display = 'none';
+      if (navMateriaisAluno) navMateriaisAluno.style.display = 'none';
+      
+      // Remova qualquer ID 'adminLink' antigo ou duplicado
+      const oldAdminLink = document.getElementById('adminLink');
+      if (oldAdminLink) {
+        oldAdminLink.style.display = 'none';
+      }
+
   } else if (userRole === 'student') {
-      // Se for aluno, esses links devem ser ocultados (se existirem na página)
-      if (adminLink) adminLink.style.display = 'none';
+      // Ocultar links de Professor
+      if (navAdmin) navAdmin.style.display = 'none';
       if (navBancoDados) navBancoDados.style.display = 'none';
       if (navDiarioClasseProf) navDiarioClasseProf.style.display = 'none';
       if (navMateriaisProf) navMateriaisProf.style.display = 'none';
+
+      // Mostrar links de Aluno
+      if (navDiarioClasseAluno) navDiarioClasseAluno.style.display = 'list-item';
+      if (navMateriaisAluno) navMateriaisAluno.style.display = 'list-item';
+
+      // Remova qualquer ID 'adminLink' antigo ou duplicado
+      const oldAdminLink = document.getElementById('adminLink');
+      if (oldAdminLink) {
+        oldAdminLink.style.display = 'none';
+      }
   }
 
 
@@ -153,10 +204,11 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // ADIÇÃO: Funções para buscar e exibir o status dos alunos
+  // ADIÇÃO: Funções para buscar e exibir o status geral dos alunos (student_overall_status)
+  // NOTA: Esta função foi atualizada para buscar da nova tabela 'status_alunos'
   window.fetchStudentOverallStatusFromBackend = async function() {
       try {
-          const response = await fetch('http://127.0.0.1:5000/status_alunos');
+          const response = await fetch('http://127.0.0.1:5000/status_alunos'); // MODIFICAÇÃO: Nova rota
           if (!response.ok) {
               throw new Error(`Erro HTTP! Status: ${response.status}`);
           }
@@ -167,11 +219,12 @@ document.addEventListener("DOMContentLoaded", () => {
           console.error('Erro ao buscar status dos alunos do backend:', error);
           const tbody = document.querySelector('#table_status_alunos tbody');
           if (tbody) {
-              tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: red;">Erro ao carregar status dos alunos.</td></tr>`;
+              tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">Erro ao carregar status dos alunos.</td></tr>`;
           }
       }
   }
 
+  // NOTA: Esta função foi atualizada para exibir dados da nova tabela 'status_alunos'
   function displayStudentOverallStatusTable(statuses) {
       const tbody = document.querySelector('#table_status_alunos tbody');
       if (!tbody) {
@@ -180,7 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       tbody.innerHTML = '';
       if (statuses.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="3" style="text-align: center;">Nenhum status de aluno encontrado.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhum status de aluno encontrado.</td></tr>`;
           return;
       }
 
@@ -190,7 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
               <td>${status.student_name || ''}</td>
               <td>${status.faltas || 0}</td>
               <td>${status.situacao || ''}</td>
-          `;
+              <td>-</td> <td>-</td> `;
           tbody.appendChild(row);
       });
   }
@@ -458,7 +511,7 @@ document.addEventListener("DOMContentLoaded", () => {
           }
       } catch (error) {
           console.error('Erro de rede ou servidor ao enviar aluno:', error);
-          alert('Erro de conexão ou servidor ao tentar adicionar aluno. Verifique o console.');
+          alert('Erro de conexão ou servidor. Tente novamente mais tarde.');
       }
   }
 
@@ -581,7 +634,7 @@ document.addEventListener("DOMContentLoaded", () => {
               }
           } catch (error) {
               console.error('Erro de rede ou servidor ao atualizar aluno:', error);
-              alert('Erro de conexão ou servidor ao tentar atualizar aluno. Verifique o console.');
+              alert('Erro de conexão ou servidor. Tente novamente mais tarde.');
           }
       }
 
@@ -684,9 +737,8 @@ window.changeTable = function() {
         window.fetchStudentOverallStatusFromBackend();
     } else if (selectedTable === 'login_alunos') {
         window.fetchLoginAlunosFromBackend();
-    } else if (selectedTable === 'atividades_alunos') {
-        window.fetchAtividadesAlunosFromBackend();
     }
+    // 'atividades_alunos' continuará estática por enquanto, se não for adicionada lógica de backend para ela.
 };
 
 window.searchTable = function() {
