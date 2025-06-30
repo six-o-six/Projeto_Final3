@@ -1,22 +1,8 @@
-// REMOÇÃO: A base de dados de usuários e a função addUser hardcoded não são mais necessárias, pois serão gerenciadas pelo backend.
-// const users = {
-//   programacao: { password: "python2024", role: "student", name: "Fulano de Tal" },
-//   professor: { password: "scratch123", role: "teacher", name: "Prof. Silva" },
-//   aluno1: { password: "aula2024", role: "student", name: "Maria Santos" },
-//   aluno2: { password: "scratch456", role: "student", name: "João Oliveira" },
-//   admin: { password: "admin123", role: "admin", name: "Administrador" },
-// }
-// function addUser(username, password, role = "student", name = "") {
-//   users[username] = { password, role, name }
-//   localStorage.setItem("users", JSON.stringify(users))
-//   console.log(`Usuário ${username} adicionado com sucesso!`)
-// }
-// function loadUsers() {
-//   const savedUsers = localStorage.getItem("users")
-//   if (savedUsers) {
-//     Object.assign(users, JSON.parse(savedUsers))
-//   }
-// }
+// REMOÇÃO: A base de dados de usuários e as funções addUser/loadUsers hardcoded não são mais necessárias, pois o login e gerenciamento de usuários agora são feitos pelo backend.
+// const users = { ... }
+// function addUser(username, password, role = "student", name = "") { ... }
+// function loadUsers() { ... }
+
 
 document.addEventListener("DOMContentLoaded", () => {
   // REMOÇÃO: loadUsers() não é mais necessário aqui, pois o login será via API.
@@ -41,21 +27,33 @@ document.addEventListener("DOMContentLoaded", () => {
           body: JSON.stringify({ username, password }),
         });
 
-        const data = await response.json();
+        const data = await response.json(); // Esta é a resposta do backend
 
-        if (data.success) {
-            // ... (mantém o armazenamento no localStorage)
-            localStorage.setItem("userRole", data.user.role); // Isso já pegará 'teacher' para ex-admins
+        console.log("Resposta completa do backend:", data); // ADIÇÃO PARA DEBUG
+        console.log("data.success é:", data.success); // ADIÇÃO PARA DEBUG
 
-            // Redirecionar baseado no papel do usuário
-            // MODIFICAÇÃO: Simplifica a condição para apenas 'teacher'
-            if (data.user.role === "teacher") {
-                window.location.href = "teacher-dashboard.html";
-            } else {
-                window.location.href = "dashboard.html";
-            }
+        if (data.success) { // Esta condição deve ser verdadeira se o login for bem-sucedido
+          console.log("Login no frontend reconhecido como SUCESSO. Tentando redirecionar..."); // ADIÇÃO PARA DEBUG
+
+          // MODIFICAÇÃO: Armazenar dados do usuário do backend no localStorage
+          localStorage.setItem("isLoggedIn", "true");
+          localStorage.setItem("userId", data.user.id);
+          localStorage.setItem("username", data.user.username);
+          localStorage.setItem("userRole", data.user.role);
+          localStorage.setItem("userName", data.user.full_name); // MODIFICAÇÃO: Agora 'full_name' do backend
+          localStorage.setItem("userStudentId", data.user.student_id);
+
+          // Redirecionar baseado no papel do usuário
+          // MODIFICAÇÃO: Simplifica a condição para apenas 'teacher', já que admins são agora teachers
+          if (data.user.role === "teacher") {
+            console.log("Redirecionando para teacher-dashboard.html"); // ADIÇÃO PARA DEBUG
+            window.location.href = "teacher-dashboard.html";
+          } else {
+            console.log("Redirecionando para dashboard.html"); // ADIÇÃO PARA DEBUG
+            window.location.href = "dashboard.html";
+          }
         } else {
-          alert('Erro no login: ' + data.message);
+          alert('Erro no login: ' + (data.message || 'Erro desconhecido.')); // MODIFICAÇÃO: Mensagem de erro mais robusta
         }
       } catch (error) {
         console.error('Erro de rede ou servidor ao tentar logar:', error);
@@ -67,20 +65,21 @@ document.addEventListener("DOMContentLoaded", () => {
   // Check if user is logged in
   const isLoginPage = window.location.pathname.endsWith("index.html") || window.location.pathname === "/";
 
-    if (!isLoginPage && !localStorage.getItem("isLoggedIn")) {
-        window.location.href = "index.html";
-    }
+  if (!isLoginPage && !localStorage.getItem("isLoggedIn")) {
+    window.location.href = "index.html";
+  }
 
   // ADIÇÃO: Lógica para mostrar/esconder o link de administração
-    const userRole = localStorage.getItem("userRole"); // Pega o papel do usuário logado
-    const adminLink = document.getElementById('adminLink');
-    if (adminLink) { // Verifica se o elemento existe na página atual (no caso, teacher-dashboard.html)
-        if (userRole === 'teacher') { // Agora, apenas professores (incluindo ex-admins) veem o link
-            adminLink.style.display = 'block'; // Ou 'list-item', dependendo do seu CSS
-        } else {
-            adminLink.style.display = 'none';
-        }
-    }
+  const userRole = localStorage.getItem("userRole"); // Pega o papel do usuário logado
+  const adminLink = document.getElementById('adminLink');
+  if (adminLink) { // Verifica se o elemento existe na página atual (no caso, teacher-dashboard.html)
+      if (userRole === 'teacher') { // Agora, apenas professores (incluindo ex-admins) veem o link
+          adminLink.style.display = 'block'; // Ou 'list-item', dependendo do seu CSS
+      } else {
+          adminLink.style.display = 'none';
+      }
+  }
+
 
   // --- Funções para buscar e exibir os alunos do backend (info_alunos) ---
   window.fetchAlunosFromBackend = async function() { // MODIFICAÇÃO: Tornada global e async
@@ -231,10 +230,12 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
+
   // --- Chamada inicial para carregar os alunos (info_alunos) se estiver na página database.html ---
   if (window.location.pathname.endsWith('database.html')) {
       fetchAlunosFromBackend();
   }
+
 
   // --- LÓGICA PARA ADICIONAR ALUNO ---
   window.addRecord = function() {
@@ -315,6 +316,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // --- LÓGICA PARA EDITAR ALUNO ---
+
+  // Função para abrir o modal de edição e preencher com os dados do aluno
   window.editAluno = async function(alunoId) { // MODIFICAÇÃO: Adicionado 'async'
       try {
           const response = await fetch(`http://127.0.0.1:5000/alunos/${alunoId}`);
@@ -346,11 +349,13 @@ document.addEventListener("DOMContentLoaded", () => {
       }
   };
 
+  // Função para fechar o modal de edição
   window.closeEditAlunoModal = function() {
       document.getElementById('editAlunoModal').classList.add('hidden');
       document.getElementById('editAlunoForm').reset();
   };
 
+  // Lógica para enviar o formulário de edição
   const editAlunoForm = document.getElementById('editAlunoForm');
   if (editAlunoForm) {
       editAlunoForm.addEventListener('submit', async function(event) { // MODIFICAÇÃO: Adicionado 'async'
@@ -359,120 +364,133 @@ document.addEventListener("DOMContentLoaded", () => {
           const formData = new FormData(editAlunoForm);
           const alunoData = {};
           for (let [key, value] of formData.entries()) {
+              // Formate a data de nascimento se for o caso
               if (key === 'data_nascimento' && value) {
+                  // O input type="date" já retorna "YYYY-MM-DD", que é o formato necessário para MySQL DATE
                   alunoData[key] = value;
               } else {
                   alunoData[key] = value;
               }
           }
 
-          const alunoId = alunoData.id;
-          delete alunoData.id;
+          const alunoId = alunoData.id; // Pega o ID do aluno do campo oculto
+          delete alunoData.id; // Remove o ID do objeto de dados, pois ele vai na URL da API
 
           console.log('Dados do aluno a serem atualizados:', alunoData, 'ID:', alunoId);
+
+          // Chame a função para enviar os dados editados para o backend
           await sendEditedAlunoToBackend(alunoId, alunoData); // MODIFICAÇÃO: Adicionado 'await'
       });
   }
 
+  // FUNÇÃO sendEditedAlunoToBackend
   async function sendEditedAlunoToBackend(alunoId, alunoData) { // MODIFICAÇÃO: Adicionado 'async'
       try {
-          const response = await fetch(`http://127.0.0.1:5000/alunos/edit/${alunoId}`, {
-              method: 'PUT',
+          const response = await fetch(`http://127.0.0.1:5000/alunos/edit/${alunoId}`, { // A URL do seu endpoint Flask (método PUT)
+              method: 'PUT', // Método HTTP PUT para atualização
               headers: {
                   'Content-Type': 'application/json',
               },
-              body: JSON.stringify(alunoData),
+              body: JSON.stringify(alunoData), // Converte o objeto JavaScript em uma string JSON
           });
-          const data = await response.json();
+          const data = await response.json(); // Espera uma resposta JSON do backend
           console.log('Resposta do backend (edição):', data);
           if (data.success) {
-              alert('Aluno atualizado com sucesso!');
-              closeEditAlunoModal();
-              fetchAlunosFromBackend(); // Recarrega a tabela
-          } else {
-              alert('Erro ao atualizar aluno: ' + (data.message || 'Erro desconhecido.'));
+                  alert('Aluno atualizado com sucesso!');
+                  closeEditAlunoModal(); // Fecha o modal
+                  fetchAlunosFromBackend(); // Recarrega a tabela para mostrar o aluno atualizado
+              } else {
+                  alert('Erro ao atualizar aluno: ' + (data.message || 'Erro desconhecido.'));
+              }
+          } catch (error) {
+              console.error('Erro de rede ou servidor ao atualizar aluno:', error);
+              alert('Erro de conexão ou servidor ao tentar atualizar aluno. Verifique o console.');
           }
-      } catch (error) {
-          console.error('Erro de rede ou servidor ao atualizar aluno:', error);
-          alert('Erro de conexão ou servidor ao tentar atualizar aluno. Verifique o console.');
       }
-  }
 
 
-  // --- Outras Funções ---
-  function goBack() {
-      window.history.back();
-  }
-
-  async function logout() { // MODIFICAÇÃO: Adicionado 'async'
-    const userId = localStorage.getItem("userId"); // ADIÇÃO: Pega o ID do usuário logado
-    if (userId) {
-      try {
-        await fetch(`http://127.0.0.1:5000/logout/${userId}`, { // ADIÇÃO: Chama o endpoint de logout
-          method: 'POST',
-        });
-        console.log('Status online atualizado para offline.');
-      } catch (error) {
-        console.error('Erro ao atualizar status de logout:', error);
-      }
+    // --- Outras Funções ---
+    // Funções de navegação e logout
+    function goBack() {
+        window.history.back();
     }
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("userId"); // ADIÇÃO
-    localStorage.removeItem("username");
-    localStorage.removeItem("userRole");
-    localStorage.removeItem("userName");
-    localStorage.removeItem("userStudentId"); // ADIÇÃO
-    window.location.href = "index.html";
-  }
 
-  const userAvatar = document.querySelector(".user-avatar");
-  if (userAvatar) {
-    userAvatar.addEventListener("click", () => {
-      if (confirm("Deseja fazer logout?")) {
-        logout();
-      }
+    // REMOÇÃO: goToPage não é usada no código atual, pode ser removida
+    // function goToPage(page) {
+    //     window.location.href = page;
+    // }
+
+    async function logout() { // MODIFICAÇÃO: Adicionado 'async'
+        const userId = localStorage.getItem("userId"); // ADIÇÃO: Pega o ID do usuário logado
+        if (userId) {
+            try {
+                await fetch(`http://127.0.0.1:5000/logout/${userId}`, { // ADIÇÃO: Chama o endpoint de logout
+                    method: 'POST',
+                });
+                console.log('Status online atualizado para offline.');
+            } catch (error) {
+                console.error('Erro ao atualizar status de logout:', error);
+            }
+        }
+        localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("userId"); // ADIÇÃO
+        localStorage.removeItem("username");
+        localStorage.removeItem("userRole");
+        localStorage.removeItem("userName");
+        localStorage.removeItem("userStudentId"); // ADIÇÃO
+        window.location.href = "index.html";
+    }
+
+    const userAvatar = document.querySelector(".user-avatar")
+    if (userAvatar) {
+      console.log('Elemento .user-avatar encontrado:', userAvatar);
+      userAvatar.addEventListener("click", () => {
+        console.log('Clique no .user-avatar detectado.');
+        if (confirm("Deseja fazer logout?")) {
+          console.log('Confirmação de logout aceita. Chamando logout().');
+          logout()
+        } else {
+          console.log('Confirmação de logout cancelada.');
+        }
+      })
+      userAvatar.style.cursor = "pointer"
+      userAvatar.title = "Clique para fazer logout"
+    } else {
+      console.warn('Elemento .user-avatar NÃO ENCONTRADO.');
+    }
+
+    function abrirWhatsApp() {
+        const whatsappLink = "https://chat.whatsapp.com/GHZuEpQhb5uGFROPWioy9o?mode=ac_c";
+        window.open(whatsappLink, '_blank');
+    }
+
+    // Fechar modals ao clicar fora ou pressionar ESC
+    // ADIÇÃO: Garantir que estas funções são acessíveis globalmente se forem chamadas via onclick
+    window.closeAddAlunoModal = window.closeAddAlunoModal || function() { // Garante que a função está definida
+        document.getElementById('addAlunoModal').classList.add('hidden');
+        document.getElementById('addAlunoForm').reset();
+    };
+
+    window.closeEditAlunoModal = window.closeEditAlunoModal || function() { // Garante que a função está definida
+        document.getElementById('editAlunoModal').classList.add('hidden');
+        document.getElementById('editAlunoForm').reset();
+    };
+
+    document.addEventListener('keydown', (e) => {
+        const addAlunoModal = document.getElementById('addAlunoModal');
+        const editAlunoModal = document.getElementById('editAlunoModal');
+        
+        if (e.key === 'Escape') {
+            if (addAlunoModal && !addAlunoModal.classList.contains('hidden')) {
+                closeAddAlunoModal();
+            }
+            if (editAlunoModal && !editAlunoModal.classList.contains('hidden')) {
+                closeEditAlunoModal();
+            }
+        }
     });
-    userAvatar.style.cursor = "pointer";
-    userAvatar.title = "Clique para fazer logout";
-  }
-
-  function abrirWhatsApp() {
-      const whatsappLink = "https://chat.whatsapp.com/GHZuEpQhb5uGFROPWioy9o?mode=ac_c";
-      window.open(whatsappLink, '_blank');
-  }
-
-  // Fechar modals ao clicar fora ou pressionar ESC
-  document.addEventListener('DOMContentLoaded', () => {
-      const addAlunoModal = document.getElementById('addAlunoModal');
-      if (addAlunoModal) { // ADIÇÃO: Verifica se o modal existe antes de adicionar listener
-          addAlunoModal.addEventListener('click', (e) => {
-              if (e.target === addAlunoModal) {
-                  closeAddAlunoModal();
-              }
-          });
-      }
-
-      const editAlunoModal = document.getElementById('editAlunoModal');
-      if (editAlunoModal) { // ADIÇÃO: Verifica se o modal existe antes de adicionar listener
-          editAlunoModal.addEventListener('click', (e) => {
-              if (e.target === editAlunoModal) {
-                  closeEditAlunoModal();
-              }
-          });
-      }
-
-      document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') {
-              if (addAlunoModal && !addAlunoModal.classList.contains('hidden')) {
-                  closeAddAlunoModal();
-              }
-              if (editAlunoModal && !editAlunoModal.classList.contains('hidden')) {
-                  closeEditAlunoModal();
-              }
-          }
-      });
-  });
 }); // Fim do DOMContentLoaded
+
 
 // Funções globais para serem acessíveis diretamente do HTML (onclick)
 window.changeTable = function() {
@@ -482,7 +500,7 @@ window.changeTable = function() {
     });
     document.getElementById(`table_${selectedTable}`).classList.remove('hidden');
 
-    // ADIÇÃO: Chamadas de fetch para as novas tabelas
+    // ADIÇÃO: Chamadas de fetch para as novas tabelas, descomentadas e ajustadas
     if (selectedTable === 'info_alunos') {
         window.fetchAlunosFromBackend();
     } else if (selectedTable === 'status_alunos') {
