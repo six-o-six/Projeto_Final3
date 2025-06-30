@@ -69,15 +69,27 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "index.html";
   }
 
-  // ADIÇÃO: Lógica para mostrar/esconder o link de administração
+  // ADIÇÃO: Lógica para mostrar/esconder o link de administração e outros links de professor/administrador
   const userRole = localStorage.getItem("userRole"); // Pega o papel do usuário logado
-  const adminLink = document.getElementById('adminLink');
-  if (adminLink) { // Verifica se o elemento existe na página atual (no caso, teacher-dashboard.html)
-      if (userRole === 'teacher') { // Agora, apenas professores (incluindo ex-admins) veem o link
-          adminLink.style.display = 'block'; // Ou 'list-item', dependendo do seu CSS
-      } else {
-          adminLink.style.display = 'none';
-      }
+  
+  const adminLink = document.getElementById('adminLink'); // Link para Administração
+  const navBancoDados = document.getElementById('navBancoDados'); // Link para Banco de Dados
+  const navDiarioClasseProf = document.getElementById('navDiarioClasseProf'); // Link para Diário de Classe (Professor)
+  const navMateriaisProf = document.getElementById('navMateriaisProf'); // Link para Materiais (Professor)
+
+  // Controla a visibilidade dos links específicos de professor/administrador
+  if (userRole === 'teacher') {
+      // Se for professor, todos esses links devem estar visíveis (se existirem na página)
+      if (adminLink) adminLink.style.display = 'block'; // ou 'list-item'
+      if (navBancoDados) navBancoDados.style.display = 'block';
+      if (navDiarioClasseProf) navDiarioClasseProf.style.display = 'block';
+      if (navMateriaisProf) navMateriaisProf.style.display = 'block';
+  } else if (userRole === 'student') {
+      // Se for aluno, esses links devem ser ocultados (se existirem na página)
+      if (adminLink) adminLink.style.display = 'none';
+      if (navBancoDados) navBancoDados.style.display = 'none';
+      if (navDiarioClasseProf) navDiarioClasseProf.style.display = 'none';
+      if (navMateriaisProf) navMateriaisProf.style.display = 'none';
   }
 
 
@@ -141,11 +153,10 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // ADIÇÃO: Funções para buscar e exibir o status geral dos alunos (student_overall_status)
-  // NOTA: Esta função foi atualizada para buscar da nova tabela 'status_alunos'
+  // ADIÇÃO: Funções para buscar e exibir o status dos alunos
   window.fetchStudentOverallStatusFromBackend = async function() {
       try {
-          const response = await fetch('http://127.0.0.1:5000/status_alunos'); // MODIFICAÇÃO: Nova rota
+          const response = await fetch('http://127.0.0.1:5000/status_alunos');
           if (!response.ok) {
               throw new Error(`Erro HTTP! Status: ${response.status}`);
           }
@@ -156,12 +167,11 @@ document.addEventListener("DOMContentLoaded", () => {
           console.error('Erro ao buscar status dos alunos do backend:', error);
           const tbody = document.querySelector('#table_status_alunos tbody');
           if (tbody) {
-              tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">Erro ao carregar status dos alunos.</td></tr>`;
+              tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: red;">Erro ao carregar status dos alunos.</td></tr>`;
           }
       }
   }
 
-  // NOTA: Esta função foi atualizada para exibir dados da nova tabela 'status_alunos'
   function displayStudentOverallStatusTable(statuses) {
       const tbody = document.querySelector('#table_status_alunos tbody');
       if (!tbody) {
@@ -170,7 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       tbody.innerHTML = '';
       if (statuses.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhum status de aluno encontrado.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="3" style="text-align: center;">Nenhum status de aluno encontrado.</td></tr>`;
           return;
       }
 
@@ -180,7 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
               <td>${status.student_name || ''}</td>
               <td>${status.faltas || 0}</td>
               <td>${status.situacao || ''}</td>
-              <td>-</td> <td>-</td> `;
+          `;
           tbody.appendChild(row);
       });
   }
@@ -674,8 +684,9 @@ window.changeTable = function() {
         window.fetchStudentOverallStatusFromBackend();
     } else if (selectedTable === 'login_alunos') {
         window.fetchLoginAlunosFromBackend();
+    } else if (selectedTable === 'atividades_alunos') {
+        window.fetchAtividadesAlunosFromBackend();
     }
-    // 'atividades_alunos' continuará estática por enquanto, se não for adicionada lógica de backend para ela.
 };
 
 window.searchTable = function() {

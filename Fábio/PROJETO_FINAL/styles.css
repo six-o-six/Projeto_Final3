@@ -178,6 +178,7 @@ body {
   color: #333;
   padding: 12px 16px;
   display: block;
+  text-align: left; /* Garante que o texto alinhe à esquerda */
 }
 
 .dropdown-content a:hover {
@@ -1094,27 +1095,22 @@ body {
   border-radius: 8px;
   font-size: 1rem;
   font-family: inherit;
-  -webkit-appearance: none; /* ADIÇÃO: Para remover o estilo padrão do navegador (arrow) */
-  -moz-appearance: none;    /* ADIÇÃO: Para remover o estilo padrão do navegador (arrow) */
-  appearance: none;         /* ADIÇÃO: Para remover o estilo padrão do navegador (arrow) */
-  background-color: white;  /* ADIÇÃO: Garante fundo branco consistente */
-  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234a90e2%22%20d%3D%22M287%2C114.3L154.2%2C27.6c-4.4-4-10.7-4-15.1%2C0L5.4%2C114.3c-4.4%2C4-4.4%2C10.7%2C0%2C15.1s10.7%2C4.4%2C15.1%2C0l126.8-87.3l126.8%2C87.3c4.4%2C4%2C10.7%2C4%2C15.1%2C0C291.4%2C125%2C291.4%2C118.3%2C287%2C114.3z%22%2F%3E%3C%2Fsvg%3E'); /* ADIÇÃO: Ícone de seta personalizado */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: white;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234a90e2%22%20d%3D%22M287%2C114.3L154.2%2C27.6c-4.4-4-10.7-4-15.1%2C0L5.4%2C114.3c-4.4%2C4-4.4%2C10.7%2C0%2C15.1s10.7%2C4.4%2C15.1%2C0l126.8-87.3l126.8%2C87.3c4.4%2C4%2C10.7%2C4%2C15.1%2C0C291.4%2C125%2C291.4%2C118.3%2C287%2C114.3z%22%2F%3E%3C%2Fsvg%3E');
   background-repeat: no-repeat;
   background-position: right 0.7em top 50%, 0 0;
   background-size: 0.65em auto;
-  padding-right: 2.5em; 
+  padding-right: 2.5em;
 }
 
 .form-group input:focus,
 .form-group textarea:focus,
-.form-group select:focus { 
-  outline: none;
-  border-color: #4a90e2;
-}
-
-.form-group textarea {
-  min-height: 80px;
-  resize: vertical;
+.form-group select:focus { /* ADIÇÃO: Inclua 'select' aqui */
+  outline: none;
+  border-color: #4a90e2;
 }
 
 .modal-footer {
@@ -1205,4 +1201,6 @@ body {
   .modal-footer {
     flex-direction: column;
   }
+
+
 }

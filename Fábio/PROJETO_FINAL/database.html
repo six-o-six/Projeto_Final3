@@ -92,43 +92,13 @@
                 <table class="database-table">
                     <thead>
                         <tr>
-                            <th>nome</th>
-                            <th>status</th>
-                            <th>frequencia</th>
-                            <th>atividades_enviadas</th>
-                            <th>ultima_atividade</th>
+                            <th>Nome</th>
+                            <th>Faltas</th>
+                            <th>Situação</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Fulano de Tal</td>
-                            <td>Ativo</td>
-                            <td>80%</td>
-                            <td>3/5</td>
-                            <td>Aula 3</td>
-                        </tr>
-                        <tr>
-                            <td>João Todynho</td>
-                            <td>Ativo</td>
-                            <td>90%</td>
-                            <td>4/5</td>
-                            <td>Aula 4</td>
-                        </tr>
-                        <tr>
-                            <td>Ciclano da Silva Sauro</td>
-                            <td>Ativo</td>
-                            <td>100%</td>
-                            <td>5/5</td>
-                            <td>Aula 5</td>
-                        </tr>
-                        <tr>
-                            <td>Beltrano Pereira</td>
-                            <td>Ativo</td>
-                            <td>70%</td>
-                            <td>2/5</td>
-                            <td>Aula 2</td>
-                        </tr>
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
             
@@ -136,36 +106,15 @@
                 <table class="database-table">
                     <thead>
                         <tr>
-                            <th>usuario</th>
-                            <th>nome</th>
-                            <th>ultimo_login</th>
-                            <th>total_logins</th>
-                            <th>status</th>
+                            <th>Usuário</th>
+                            <th>Nome</th>
+                            <th>Último Login</th>
+                            <th>Total Logins</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>programacao</td>
-                            <td>Fulano de Tal</td>
-                            <td>27/06/2025 19:30</td>
-                            <td>15</td>
-                            <td>Online</td>
-                        </tr>
-                        <tr>
-                            <td>aluno1</td>
-                            <td>Maria Santos</td>
-                            <td>26/06/2025 14:20</td>
-                            <td>12</td>
-                            <td>Offline</td>
-                        </tr>
-                        <tr>
-                            <td>aluno2</td>
-                            <td>João Oliveira</td>
-                            <td>25/06/2025 16:45</td>
-                            <td>8</td>
-                            <td>Offline</td>
-                        </tr>
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
             
@@ -173,53 +122,22 @@
                 <table class="database-table">
                     <thead>
                         <tr>
-                            <th>nome</th>
-                            <th>aula_1</th>
-                            <th>aula_2</th>
-                            <th>aula_3</th>
-                            <th>aula_4</th>
-                            <th>aula_5</th>
-                            <th>total_enviadas</th>
+                            <th>Nome</th>
+                            <th>Aula 1</th>
+                            <th>Aula 2</th>
+                            <th>Aula 3</th>
+                            <th>Aula 4</th>
+                            <th>Aula 5</th>
+                            <th>Aula 6</th>
+                            <th>Aula 7</th>
+                            <th>Aula 8</th>
+                            <th>Aula 9</th>
+                            <th>Aula 10</th>
+                            <th>Total Enviadas</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Fulano de Tal</td>
-                            <td>✅ Enviada</td>
-                            <td>✅ Enviada</td>
-                            <td>✅ Enviada</td>
-                            <td>❌ Pendente</td>
-                            <td>❌ Pendente</td>
-                            <td>3/5</td>
-                        </tr>
-                        <tr>
-                            <td>João Todynho</td>
-                            <td>✅ Enviada</td>
-                            <td>✅ Enviada</td>
-                            <td>✅ Enviada</td>
-                            <td>✅ Enviada</td>
-                            <td>❌ Pendente</td>
-                            <td>4/5</td>
-                        </tr>
-                        <tr>
-                            <td>Ciclano da Silva Sauro</td>
-                            <td>✅ Enviada</td>
-                            <td>✅ Enviada</td>
-                            <td>✅ Enviada</td>
-                            <td>✅ Enviada</td>
-                            <td>✅ Enviada</td>
-                            <td>5/5</td>
-                        </tr>
-                        <tr>
-                            <td>Beltrano Pereira</td>
-                            <td>✅ Enviada</td>
-                            <td>✅ Enviada</td>
-                            <td>❌ Pendente</td>
-                            <td>❌ Pendente</td>
-                            <td>❌ Pendente</td>
-                            <td>2/5</td>
-                        </tr>
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
             
@@ -382,33 +300,6 @@
 
     <script src="script.js"></script>
     <script>
-        function changeTable() {
-            const selectedTable = document.getElementById('tableSelect').value;
-            
-            // Esconder todas as tabelas
-            document.querySelectorAll('.database-table-container').forEach(table => {
-                table.classList.add('hidden');
-            });
-            
-            // Mostrar tabela selecionada
-            document.getElementById(`table_${selectedTable}`).classList.remove('hidden');
-        }
-        
-        function searchTable() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const activeTable = document.querySelector('.database-table-container:not(.hidden)');
-            const rows = activeTable.querySelectorAll('tbody tr');
-            
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                if (text.includes(searchTerm)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        }
-        
         // Funções para abrir/fechar o modal de adicionar aluno
         function addRecord() {
             const selectedTable = document.getElementById('tableSelect').value;
