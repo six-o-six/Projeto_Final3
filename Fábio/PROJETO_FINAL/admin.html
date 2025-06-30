@@ -151,70 +151,121 @@
     
     <script src="script.js"></script>
     <script>
-        // Carregar e exibir usuários
-        function loadUsersList() {
+        // Carregar e exibir usuários do BACKEND
+        async function loadUsersList() {
             const usersList = document.getElementById('usersList');
-            const savedUsers = localStorage.getItem('users');
-            const users = savedUsers ? JSON.parse(savedUsers) : {};
-            
-            usersList.innerHTML = '';
-            
-            Object.keys(users).forEach(username => {
-                const user = users[username];
-                const userDiv = document.createElement('div');
-                userDiv.className = 'user-item';
-                userDiv.innerHTML = `
-                    <div class="user-info">
-                        <strong>${user.name || username}</strong><br>
-                        <small>Usuário: ${username} | Tipo: ${user.role}</small>
-                    </div>
-                    <div class="user-actions">
-                        <button class="delete-btn" onclick="deleteUser('${username}')">Excluir</button>
-                    </div>
-                `;
-                usersList.appendChild(userDiv);
-            });
+            usersList.innerHTML = ''; // Limpa a lista existente
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/users'); // Requisição GET para buscar usuários
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP! Status: ${response.status}`);
+                }
+                const users = await response.json();
+                console.log('Usuários carregados do backend:', users);
+
+                if (users.length === 0) {
+                    usersList.innerHTML = '<p style="text-align: center; color: #666;">Nenhum usuário cadastrado.</p>';
+                    return;
+                }
+                
+                users.forEach(user => {
+                    const userDiv = document.createElement('div');
+                    userDiv.className = 'user-item';
+                    userDiv.innerHTML = `
+                        <div class="user-info">
+                            <strong>${user.full_name || user.username}</strong><br>
+                            <small>Usuário: ${user.username} | Tipo: ${user.role}</small>
+                            ${user.last_login ? `<br><small>Último Login: ${new Date(user.last_login).toLocaleString('pt-BR')}</small>` : ''}
+                            ${user.online_status ? `<br><small>Status: ${user.online_status}</small>` : ''}
+                        </div>
+                        <div class="user-actions">
+                            <button class="action-btn small" onclick="editUser('${user.id}')" title="Editar">✏️</button>
+                            <button class="delete-btn" onclick="deleteUser('${user.id}')">Excluir</button>
+                        </div>
+                    `;
+                    usersList.appendChild(userDiv);
+                });
+
+            } catch (error) {
+                console.error('Erro ao carregar lista de usuários:', error);
+                usersList.innerHTML = '<p style="text-align: center; color: red;">Erro ao carregar usuários.</p>';
+            }
         }
         
-        // Adicionar novo usuário
-        document.getElementById('addUserForm').addEventListener('submit', (e) => {
+        // Adicionar novo usuário (enviar para o backend)
+        document.getElementById('addUserForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const username = document.getElementById('newUsername').value;
             const password = document.getElementById('newPassword').value;
-            const name = document.getElementById('newName').value;
+            const full_name = document.getElementById('newName').value; // MODIFICADO: 'name' para 'full_name'
             const role = document.getElementById('newRole').value;
-            
-            const savedUsers = localStorage.getItem('users');
-            const users = savedUsers ? JSON.parse(savedUsers) : {};
-            
-            if (users[username]) {
-                alert('Este nome de usuário já existe!');
-                return;
+
+            // Se o papel for 'student', e houver um aluno correspondente, você pode pegar o student_id
+            // Por enquanto, student_id será null se não houver lógica para associar
+            let student_id = null; 
+            // Lógica para buscar student_id se for 'student' e associar a um aluno existente
+            // Por exemplo: se o full_name for o mesmo de um aluno, buscar o ID dele.
+            // Isso é mais complexo e pode ser feito numa etapa futura.
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/users/add', { // Requisição POST para adicionar usuário
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password, full_name, role, student_id }), // Envia todos os dados
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Usuário adicionado com sucesso!');
+                    document.getElementById('addUserForm').reset(); // Limpa o formulário
+                    loadUsersList(); // Recarrega a lista para mostrar o novo usuário
+                } else {
+                    alert('Erro ao adicionar usuário: ' + (data.message || 'Erro desconhecido.'));
+                }
+            } catch (error) {
+                console.error('Erro de rede ou servidor ao adicionar usuário:', error);
+                alert('Erro de conexão ou servidor ao tentar adicionar usuário.');
             }
-            
-            users[username] = { password, role, name };
-            localStorage.setItem('users', JSON.stringify(users));
-            
-            alert('Usuário adicionado com sucesso!');
-            document.getElementById('addUserForm').reset();
-            loadUsersList();
         });
         
-        // Excluir usuário
-        function deleteUser(username) {
-            if (confirm(`Tem certeza que deseja excluir o usuário ${username}?`)) {
-                const savedUsers = localStorage.getItem('users');
-                const users = savedUsers ? JSON.parse(savedUsers) : {};
-                
-                delete users[username];
-                localStorage.setItem('users', JSON.stringify(users));
-                
-                alert('Usuário excluído com sucesso!');
-                loadUsersList();
+        // Excluir usuário (enviar para o backend)
+        async function deleteUser(userId) { // MODIFICADO: Recebe userId, não username
+            if (confirm(`Tem certeza que deseja excluir o usuário com ID ${userId}?`)) {
+                try {
+                    const response = await fetch(`http://127.0.0.1:5000/users/delete/${userId}`, { // Requisição DELETE
+                        method: 'DELETE',
+                    });
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        alert('Usuário excluído com sucesso!');
+                        loadUsersList(); // Recarrega a lista
+                    } else {
+                        alert('Erro ao excluir usuário: ' + (data.message || 'Erro desconhecido.'));
+                    }
+                } catch (error) {
+                    console.error('Erro de rede ou servidor ao excluir usuário:', error);
+                    alert('Erro de conexão ou servidor ao tentar excluir usuário.');
+                }
             }
         }
-        
+
+        // ADIÇÃO: Função para editar usuário (pode ser expandida no futuro)
+        // Por enquanto, apenas alerta, mas você pode expandir para um modal de edição.
+        async function editUser(userId) {
+            alert(`Funcionalidade de edição para o usuário ID ${userId} será implementada aqui.`);
+            // Exemplo de como buscar dados para edição:
+            // const response = await fetch(`http://127.0.0.1:5000/users/${userId}`);
+            // const userData = await response.json();
+            // console.log("Dados para editar:", userData);
+            // Implementar modal de edição aqui
+        }
+            
         // Carregar lista ao abrir a página
         document.addEventListener('DOMContentLoaded', loadUsersList);
     </script>

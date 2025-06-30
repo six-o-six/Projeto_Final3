@@ -142,9 +142,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ADIÇÃO: Funções para buscar e exibir o status geral dos alunos (student_overall_status)
+  // NOTA: Esta função foi atualizada para buscar da nova tabela 'status_alunos'
   window.fetchStudentOverallStatusFromBackend = async function() {
       try {
-          const response = await fetch('http://127.0.0.1:5000/student_status');
+          const response = await fetch('http://127.0.0.1:5000/status_alunos'); // MODIFICAÇÃO: Nova rota
           if (!response.ok) {
               throw new Error(`Erro HTTP! Status: ${response.status}`);
           }
@@ -160,6 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
   }
 
+  // NOTA: Esta função foi atualizada para exibir dados da nova tabela 'status_alunos'
   function displayStudentOverallStatusTable(statuses) {
       const tbody = document.querySelector('#table_status_alunos tbody');
       if (!tbody) {
@@ -176,14 +178,13 @@ document.addEventListener("DOMContentLoaded", () => {
           const row = document.createElement('tr');
           row.innerHTML = `
               <td>${status.student_name || ''}</td>
-              <td>${status.current_status || ''}</td>
-              <td>${status.presence_percentage !== null ? status.presence_percentage + '%' : ''}</td>
-              <td>${status.activities_submitted_info || ''}</td>
-              <td>${status.last_activity_completed || ''}</td>
-          `;
+              <td>${status.faltas || 0}</td>
+              <td>${status.situacao || ''}</td>
+              <td>-</td> <td>-</td> `;
           tbody.appendChild(row);
       });
   }
+
 
   // ADIÇÃO: Funções para buscar e exibir os dados de login dos usuários (users)
   window.fetchLoginAlunosFromBackend = async function() {
@@ -230,10 +231,156 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
+  // ADIÇÃO: Funções para buscar e exibir os dados das atividades dos alunos (atividades_alunos)
+  window.fetchAtividadesAlunosFromBackend = async function() {
+    try {
+        const response = await fetch('http://127.0.0.1:5000/atividades_alunos'); // Nova rota para atividades
+        if (!response.ok) {
+            throw new Error(`Erro HTTP! Status: ${response.status}`);
+        }
+        const atividades = await response.json();
+        console.log('Atividades dos alunos carregadas do backend:', atividades);
+        displayAtividadesAlunosTable(atividades);
+    } catch (error) {
+        console.error('Erro ao buscar atividades dos alunos do backend:', error);
+        const tbody = document.querySelector('#table_atividades_alunos tbody');
+        if (tbody) {
+            tbody.innerHTML = `<tr><td colspan="12" style="text-align: center; color: red;">Erro ao carregar atividades dos alunos.</td></tr>`;
+        }
+    }
+  }
+
+  function displayAtividadesAlunosTable(atividades) {
+      const tbody = document.querySelector('#table_atividades_alunos tbody');
+      if (!tbody) {
+          console.warn('Elemento tbody da tabela de atividades_alunos não encontrado.');
+          return;
+      }
+      tbody.innerHTML = '';
+      if (atividades.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="12" style="text-align: center;">Nenhuma atividade de aluno encontrada.</td></tr>`;
+          return;
+      }
+
+      atividades.forEach(atividade => {
+          const row = document.createElement('tr');
+          // Construir dinamicamente as colunas de aula
+          let aulasHtml = '';
+          for (let i = 1; i <= 10; i++) {
+              const aulaKey = `aula_${i}`;
+              aulasHtml += `<td>${atividade[aulaKey] || 'Pendente'}</td>`;
+          }
+
+          row.innerHTML = `
+              <td>${atividade.student_name || ''}</td>
+              ${aulasHtml}
+              <td>${atividade.total_enviadas !== null ? atividade.total_enviadas : ''}</td>
+              <td>
+                  </td>
+          `;
+          tbody.appendChild(row);
+      });
+  }
+
 
   // --- Chamada inicial para carregar os alunos (info_alunos) se estiver na página database.html ---
   if (window.location.pathname.endsWith('database.html')) {
       fetchAlunosFromBackend();
+  }
+
+
+  // ADIÇÃO: Função de validação de formulário (Adicionar e Editar Aluno)
+  function validateAlunoForm(alunoData, isEdit = false) {
+      // Validação de campos obrigatórios e ENUMs (selects)
+      if (!alunoData.turma) {
+          alert('Campo "Turma" é obrigatório.');
+          return false;
+      }
+      if (!alunoData.nome) {
+          alert('Campo "Nome" é obrigatório.');
+          return false;
+      }
+      if (!alunoData.cpf) { // CPF é obrigatório
+          alert('Campo "CPF" é obrigatório.');
+          return false;
+      }
+      if (!alunoData.responsavel) { // Responsável é obrigatório
+          alert('Campo "Responsável" é obrigatório.');
+          return false;
+      }
+      if (!alunoData.escolaridade) {
+          alert('Campo "Escolaridade" é obrigatório.');
+          return false;
+      }
+      if (!alunoData.escola) {
+          alert('Campo "Escola" é obrigatório.');
+          return false;
+      }
+      // Data de nascimento é obrigatória apenas na adição, se não for edição e campo for vazio
+      if (!isEdit && !alunoData.data_nascimento) {
+          alert('Campo "Data de Nascimento" é obrigatório.');
+          return false;
+      }
+
+
+      // REGRA: nome (até 70 caracteres; não deve receber números ou símbolos)
+      if (alunoData.nome.length > 70) {
+          alert('Campo "Nome" deve ter no máximo 70 caracteres.');
+          return false;
+      }
+      // Verifica se contém números ou símbolos (permite acentuação e espaços)
+      if (/[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(alunoData.nome)) {
+          alert('Campo "Nome" não deve conter números ou símbolos.');
+          return false;
+      }
+
+      // REGRA: email (até 50 caracteres)
+      if (alunoData.email && alunoData.email.length > 50) {
+          alert('Campo "Email" deve ter no máximo 50 caracteres.');
+          return false;
+      }
+      // REGRA: email (formato básico de email)
+      if (alunoData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(alunoData.email)) {
+          alert('Campo "Email" inválido. Por favor, insira um formato de email válido.');
+          return false;
+      }
+
+      // REGRA: telefone (até 11 números; receber apenas números)
+      if (alunoData.telefone && !/^[0-9]{0,11}$/.test(alunoData.telefone)) {
+          alert('Campo "Telefone" deve conter apenas números e ter no máximo 11 dígitos.');
+          return false;
+      }
+
+      // REGRA: rg (7 a 9 números; receber apenas números)
+      if (alunoData.rg && !/^[0-9]{7,9}$/.test(alunoData.rg)) {
+          alert('Campo "RG" deve conter apenas números e ter entre 7 e 9 dígitos.');
+          return false;
+      }
+
+      // REGRA: cpf (11 números; receber apenas números)
+      if (alunoData.cpf && !/^[0-9]{11}$/.test(alunoData.cpf)) {
+          alert('Campo "CPF" deve conter apenas números e ter 11 dígitos.');
+          return false;
+      }
+
+      // REGRA: endereco (até 100 caracteres)
+      if (alunoData.endereco && alunoData.endereco.length > 100) {
+          alert('Campo "Endereço" deve ter no máximo 100 caracteres.');
+          return false;
+      }
+
+      // REGRA: responsavel (até 70 caracteres; não deve receber números ou símbolos)
+      if (alunoData.responsavel.length > 70) {
+          alert('Campo "Responsável" deve ter no máximo 70 caracteres.');
+          return false;
+      }
+      // Verifica se contém números ou símbolos (permite acentuação e espaços)
+      if (/[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(alunoData.responsavel)) {
+          alert('Campo "Responsável" não deve conter números ou símbolos.');
+          return false;
+      }
+      
+      return true; // Se todas as validações passarem
   }
 
 
@@ -243,6 +390,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (selectedTable === 'info_alunos') {
           document.getElementById('addAlunoModal').classList.remove('hidden');
       } else {
+          // MODIFICAÇÃO: Lógica para adicionar em outras tabelas, se necessário
+          // Por exemplo, para classes, atividades, etc.
           alert(`Funcionalidade de adicionar ainda não implementada para a tabela: ${selectedTable}`);
       }
   }
@@ -267,7 +416,13 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  async function sendAlunoToBackend(alunoData) { // MODIFICAÇÃO: Adicionado 'async'
+  // MODIFICAÇÃO: sendAlunoToBackend agora inclui validação e exibe credenciais
+  async function sendAlunoToBackend(alunoData) {
+      // ADIÇÃO: Chamar a função de validação antes de enviar
+      if (!validateAlunoForm(alunoData, false)) { // 'false' porque é uma nova adição
+          return; // Impede o envio se a validação falhar
+      }
+
       try {
           const response = await fetch('http://127.0.0.1:5000/alunos/add', {
               method: 'POST',
@@ -279,10 +434,16 @@ document.addEventListener("DOMContentLoaded", () => {
           const data = await response.json();
           console.log('Resposta do backend:', data);
           if (data.success) {
-              alert('Aluno adicionado com sucesso!');
+              let successMessage = 'Aluno adicionado com sucesso!';
+              // ADIÇÃO: Exibe também usuário e senha gerados pelo backend
+              if (data.generated_username && data.generated_password) {
+                  successMessage += `\n\nCredenciais de Login:\nUsuário: ${data.generated_username}\nSenha: ${data.generated_password}`;
+              }
+              alert(successMessage);
               closeAddAlunoModal();
               fetchAlunosFromBackend(); // Recarrega a tabela
           } else {
+              // Adiciona detalhes da mensagem de erro do backend (ex: erro de duplicidade)
               alert('Erro ao adicionar aluno: ' + (data.message || 'Erro desconhecido.'));
           }
       } catch (error) {
@@ -376,6 +537,11 @@ document.addEventListener("DOMContentLoaded", () => {
           const alunoId = alunoData.id; // Pega o ID do aluno do campo oculto
           delete alunoData.id; // Remove o ID do objeto de dados, pois ele vai na URL da API
 
+          // ADIÇÃO: Chamar a função de validação antes de enviar
+          if (!validateAlunoForm(alunoData, true)) { // 'true' porque é uma edição
+              return; // Impede o envio se a validação falhar
+          }
+
           console.log('Dados do aluno a serem atualizados:', alunoData, 'ID:', alunoId);
 
           // Chame a função para enviar os dados editados para o backend
@@ -400,6 +566,7 @@ document.addEventListener("DOMContentLoaded", () => {
                   closeEditAlunoModal(); // Fecha o modal
                   fetchAlunosFromBackend(); // Recarrega a tabela para mostrar o aluno atualizado
               } else {
+                  // Adiciona detalhes da mensagem de erro do backend (ex: erro de duplicidade)
                   alert('Erro ao atualizar aluno: ' + (data.message || 'Erro desconhecido.'));
               }
           } catch (error) {
