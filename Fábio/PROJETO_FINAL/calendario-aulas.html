@@ -196,9 +196,8 @@
                 classDiv.className = `class-item ${classItem.status}`;
                 
                 // Só adicionar funcionalidade de clique para professores/admins
-                if (userRole === 'teacher' || userRole === 'admin') {
-                    classDiv.onclick = () => selectClass(classItem.id);
-                    classDiv.style.cursor = 'pointer';
+                if (userRole === 'teacher') {
+                    document.getElementById('teacherControls').style.display = 'block';
                 } else {
                     classDiv.style.cursor = 'default';
                 }

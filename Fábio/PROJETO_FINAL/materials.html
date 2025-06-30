@@ -73,7 +73,7 @@ function loadMaterials() {
             <div class="lesson-title">${material.name}</div>
             <div class="lesson-actions">
                 <button class="action-btn" onclick="downloadMaterial('${material.id}')">📥</button>
-                <button class="action-btn edit-btn" onclick="editMaterial('${material.id}')" style="display: ${userRole === 'teacher' || userRole === 'admin' ? 'inline-flex' : 'none'}">✏️</button>
+                <button class="action-btn edit-btn" onclick="editMaterial('${material.id}')" style="display: ${userRole === 'teacher' ? 'inline-flex' : 'none'}">✏️</button>
             </div>
         `;
         materialsList.appendChild(materialDiv);
