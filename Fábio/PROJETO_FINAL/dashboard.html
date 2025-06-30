@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Curso de Scratch</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="main-layout">
+        <header class="header">
+            <div class="logo">
+                <img src=img/scratch.png height=50px width=50px alt="Scratch Logo" id="scratch-logo">
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="dashboard.html" class="active">Diário de Classe</a></li>
+                    <li><a href="materials.html">Materiais</a></li>
+                    <li class="dropdown">
+                        <a href="#">Links Externos ▼</a>
+                        <div class="dropdown-content">
+                            <a href="https://scratch.mit.edu/" target="_blank">Scratch Site</a>
+                            <a href="https://scratch.mit.edu/projects/editor/" target="_blank">Editor do Scratch</a>
+                            <a href="https://scratch.mit.edu/ideas" target="_blank">Ideias de Projetos</a>
+                            <a href="https://www.youtube.com/results?search_query=scratch+tutorial+português" target="_blank">Tutoriais YouTube</a>
+                            <a href="https://wayground.com/home-v1?lng=pt-BR" target="_blank">Wayground (Quizizz)</a>
+                        </div>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#">Informações ▼</a>
+                        <div class="dropdown-content">
+                            <a href="horario-onibus.html">Horário do Ônibus</a>
+                            <a href="calendario-aulas.html">Calendário das Aulas</a>
+                            <a href="#" onclick="abrirWhatsApp()">Link do grupo do WhatsApp</a>
+                            <a href="endereco-aula.html">Endereço do Local das Aulas</a>
+                            <a href="contato.html">Contato</a>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+            <div class="user-profile">
+                <div class="user-avatar"><img src=img/icon-user.png height= 40px width= 40px alt="Icone do Perfil"></div>
+            </div>
+        </header>
+        
+        <main class="content">
+    <h1 class="page-title">Diário de Classe</h1>
+    
+    <div class="attendance-info">
+        <div class="attendance-stats">
+            <div class="stat-item">
+                <span class="stat-label">Seu percentual de presença:</span>
+                <span class="stat-value">80%</span>
+            </div>
+            <div class="warning-message">
+                Você ainda tem <strong>1 falta(s)</strong> para não ser desclassificado(a)
+            </div>
+        </div>
+    </div>
+    
+    <div class="attendance-table-container">
+        <table class="attendance-table">
+            <thead>
+                <tr>
+                    <th class="name-header">Nome</th>
+                    <th>16/06</th>
+                    <th>18/06</th>
+                    <th>25/06</th>
+                    <th>30/06</th>
+                    <th>02/07</th>
+                    <th>07/07</th>
+                    <th>09/07</th>
+                    <th>14/07</th>
+                    <th>16/07</th>
+                    <th>21/07</th>
+                    <th>P</th>
+                    <th>Fj</th>
+                    <th>F</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="student-name">Fulano de Tal</td>
+                    <td class="attendance-cell present">P</td>
+                    <td class="attendance-cell present">P</td>
+                    <td class="attendance-cell present">P</td>
+                    <td class="attendance-cell absent">F</td>
+                    <td class="attendance-cell present">P</td>
+                    <td class="attendance-cell absent">F</td>
+                    <td class="attendance-cell present">P</td>
+                    <td class="attendance-cell justified">Fj</td>
+                    <td class="attendance-cell present">P</td>
+                    <td class="attendance-cell present">P</td>
+                    <td class="total-present">6</td>
+                    <td class="total-justified">2</td>
+                    <td class="total-absent">1</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

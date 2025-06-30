@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diário de Classe - Professor</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="main-layout">
+        <header class="header">
+            <div class="logo">
+                <img src=img/scratch.png height=150 width=150 alt="Scratch Logo" id="scratch-logo">
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="database.html">Banco de Dados</a></li>
+                    <li><a href="teacher-diary.html" class="active">Diário de Classe</a></li>
+                    <li><a href="teacher-materials.html">Materiais</a></li>
+                    <li class="dropdown">
+                        <a href="#">Links Externos ▼</a>
+                        <div class="dropdown-content">
+                            <a href="https://scratch.mit.edu/" target="_blank">Scratch Website</a>
+                            <a href="https://scratch.mit.edu/projects/editor/" target="_blank">Editor do Scratch</a>
+                            <a href="https://scratch.mit.edu/ideas" target="_blank">Ideias de Projetos</a>
+                            <a href="https://www.youtube.com/results?search_query=scratch+tutorial+português" target="_blank">Tutoriais YouTube</a>
+                            <a href="https://wayground.com/home-v1?lng=pt-BR" target="_blank">Wayground (Quizizz)</a>
+                        </div>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#">Informações ▼</a>
+                        <div class="dropdown-content">
+                            <a href="horario-onibus.html">Horário do Ônibus</a>
+                            <a href="calendario-aulas.html">Calendário das Aulas</a>
+                            <a href="#" onclick="abrirWhatsApp()">Link do grupo do WhatsApp</a>
+                            <a href="endereco-aula.html">Endereço do Local das Aulas</a>
+                            <a href="contato.html">Contato</a>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+            <div class="user-profile">
+                <div class="user-avatar"><img src=img/icon-user.png height= 40px width= 40px alt="Icone do Perfil"></div>
+            </div>
+        </header>
+        
+        <main class="content">
+            <h1 class="page-title">Diário de Classe</h1>
+            
+            <div class="class-controls">
+                <div class="turma-selector">
+                    <label for="turmaSelect"><strong>Turma:</strong></label>
+                    <select id="turmaSelect" onchange="changeTurma()">
+                        <option value="25.1-T1">25.1 - T1</option>
+                        <option value="25.1-T2">25.1 - T2</option>
+                        <option value="25.2-T1">25.2 - T1</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="attendance-table-container">
+                <table class="attendance-table teacher-mode">
+                    <thead>
+                        <tr>
+                            <th class="name-header">Nome</th>
+                            <th>16/06</th>
+                            <th>18/06</th>
+                            <th>23/06</th>
+                            <th>30/06</th>
+                            <th>02/07</th>
+                            <th>07/07</th>
+                            <th>09/07</th>
+                            <th>14/07</th>
+                            <th>16/07</th>
+                            <th>21/07</th>
+                            <th>P</th>
+                            <th>Fj</th>
+                            <th>F</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="student-name">Fulano de Tal</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">F</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">F</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">Fj</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="total-present">6</td>
+                            <td class="total-justified">1</td>
+                            <td class="total-absent">2</td>
+                        </tr>
+                        <tr>
+                            <td class="student-name">João Todynho</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">F</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">F</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">Fj</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="total-present">6</td>
+                            <td class="total-justified">1</td>
+                            <td class="total-absent">2</td>
+                        </tr>
+                        <tr>
+                            <td class="student-name">Ciclano da Silva Sauro</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="total-present">9</td>
+                            <td class="total-justified">0</td>
+                            <td class="total-absent">0</td>
+                        </tr>
+                        <tr>
+                            <td class="student-name">Beltrano Pereira</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">F</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">Fj</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="attendance-cell editable" onclick="toggleAttendance(this)">P</td>
+                            <td class="total-present">7</td>
+                            <td class="total-justified">1</td>
+                            <td class="total-absent">1</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="diary-actions">
+                <button class="action-btn primary" onclick="saveAttendance()">SALVAR ALTERAÇÕES</button>
+                <button class="action-btn secondary" onclick="exportAttendance()">EXPORTAR</button>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        function changeTurma() {
+            const selectedTurma = document.getElementById('turmaSelect').value;
+            console.log('Turma selecionada:', selectedTurma);
+            // Aqui você carregaria os dados da turma selecionada
+            alert(`Carregando dados da turma: ${selectedTurma}`);
+        }
+        
+        function toggleAttendance(cell) {
+            const currentValue = cell.textContent.trim();
+            let newValue;
+            
+            // Ciclo: P -> F -> Fj -> P
+            switch(currentValue) {
+                case 'P':
+                    newValue = 'F';
+                    cell.className = 'attendance-cell editable absent';
+                    break;
+                case 'F':
+                    newValue = 'Fj';
+                    cell.className = 'attendance-cell editable justified';
+                    break;
+                case 'Fj':
+                    newValue = 'P';
+                    cell.className = 'attendance-cell editable present';
+                    break;
+                default:
+                    newValue = 'P';
+                    cell.className = 'attendance-cell editable present';
+            }
+            
+            cell.textContent = newValue;
+            updateTotals(cell.closest('tr'));
+        }
+        
+        function updateTotals(row) {
+            const cells = row.querySelectorAll('.attendance-cell.editable');
+            let present = 0, justified = 0, absent = 0;
+            
+            cells.forEach(cell => {
+                const value = cell.textContent.trim();
+                switch(value) {
+                    case 'P': present++; break;
+                    case 'F': absent++; break;
+                    case 'Fj': justified++; break;
+                }
+            });
+            
+            // Atualizar totais na linha
+            const totalCells = row.querySelectorAll('td');
+            totalCells[totalCells.length - 3].textContent = present; // P
+            totalCells[totalCells.length - 2].textContent = justified; // Fj
+            totalCells[totalCells.length - 1].textContent = absent; // F
+        }
+        
+        function saveAttendance() {
+            // Coletar dados da tabela
+            const attendanceData = [];
+            const rows = document.querySelectorAll('.attendance-table tbody tr');
+            
+            rows.forEach(row => {
+                const studentName = row.querySelector('.student-name').textContent;
+                const attendanceCells = row.querySelectorAll('.attendance-cell.editable');
+                const attendance = Array.from(attendanceCells).map(cell => cell.textContent.trim());
+                
+                attendanceData.push({
+                    student: studentName,
+                    attendance: attendance
+                });
+            });
+            
+            // Salvar no localStorage (em produção seria enviado para servidor)
+            localStorage.setItem('attendanceData', JSON.stringify(attendanceData));
+            alert('Frequência salva com sucesso!');
+        }
+        
+        function exportAttendance() {
+            alert('Exportando dados de frequência...');
+            // Implementar exportação para Excel/PDF
+        }
+        
+        // Adicionar efeito visual para células editáveis
+        document.addEventListener('DOMContentLoaded', () => {
+            const editableCells = document.querySelectorAll('.attendance-cell.editable');
+            editableCells.forEach(cell => {
+                cell.style.cursor = 'pointer';
+                cell.title = 'Clique para alterar (P → F → Fj → P)';
+                
+                // Aplicar classes baseadas no valor atual
+                const value = cell.textContent.trim();
+                switch(value) {
+                    case 'P':
+                        cell.classList.add('present');
+                        break;
+                    case 'F':
+                        cell.classList.add('absent');
+                        break;
+                    case 'Fj':
+                        cell.classList.add('justified');
+                        break;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
