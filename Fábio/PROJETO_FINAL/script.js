@@ -1,3 +1,4 @@
+
 // REMOÇÃO: A base de dados de usuários e as funções addUser/loadUsers hardcoded não são mais necessárias, pois o login e gerenciamento de usuários agora são feitos pelo backend.
 // const users = { ... }
 // function addUser(username, password, role = "student", name = "") { { ... } }
